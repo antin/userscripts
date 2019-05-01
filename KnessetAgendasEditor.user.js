@@ -56,8 +56,12 @@ function btn(text, style) {
 function sendData(ev) {
     ev.preventDefault();
   //https://docs.google.com/spreadsheets/d/1c4PDTmDIn2M2tsSjK9LbrtXlhbHhRowdAMJk9aAHID8/edit#gid=0
-  var lawName = $(".LawDarkBrownTitleH2").text();
+  //
+    var lawName = $(".LawDarkBrownTitleH2").text();
   var billNum = $("strong:contains(מספר הצ\"ח)").parent().next().text().trim();
+    var billType = $("strong:contains(סוג הצ\"ח)").parent().next().text().trim();
+var userId = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getId();
+
   var derug = $("#derug").val();
   var initiators = $("strong:contains(חברי הכנסת היוזמים)").parent().parent().next().text().trim().split(", ");
   if(derug < -50) {
@@ -65,10 +69,10 @@ function sendData(ev) {
     return;
   }
   gapi.client.sheets.spreadsheets.values.append({
-    spreadsheetId: '1c4PDTmDIn2M2tsSjK9LbrtXlhbHhRowdAMJk9aAHID8',
+    spreadsheetId: '1bufIgo0FEsdAhtVD37vbrX_CvWcfaxdaQ2x9tZCNwJk',
     range: 'laws!A2',
     resource: {
-      values: [[lawName, billNum, derug,
+      values: [[lawName,userId,billType, billNum, derug,
                 location.href, description.value,
                 /* comment */, /* is voted? */,/* is passed? */, ].
                concat(initiators)]
