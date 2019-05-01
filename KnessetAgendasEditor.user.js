@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Knesset Agendas Editor Addon
 // @description    Help Knesset Agendas Editors And Reviewers
-// @version        1.2
+// @version        1.3
 // @namespace      ohadcn
 // @author         Ohad Cohen
 // @match          https://main.knesset.gov.il/Activity/Legislation/Laws/Pages/LawBill.aspx*
@@ -60,7 +60,15 @@ function sendData(ev) {
     var lawName = $(".LawDarkBrownTitleH2").text();
   var billNum = $("strong:contains(מספר הצ\"ח)").parent().next().text().trim();
     var billType = $("strong:contains(סוג הצ\"ח)").parent().next().text().trim();
+    // help https://developers.google.com/identity/sign-in/web/reference
+	// this variable will enable us to handle rows per user
 var userId = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getId();
+    // help https://stackoverflow.com/questions/2857034/how-do-i-get-url-parameters-from-a-link-to-form-a-new-link-in-a-greasemonkey-scr
+    //https://main.knesset.gov.il/Activity/Legislation/Laws/Pages/LawBill.aspx?t=lawsuggestionssearch&lawitemid=2075453
+    var searchableStr = document.URL + '&';
+	// this variable will enable us to update the specific low
+    var lawitemid = searchableStr.match(/[\?\&]lawitemid=([^\&\#]+)[\&\#]/i)[1];
+
 
   var derug = $("#derug").val();
   var initiators = $("strong:contains(חברי הכנסת היוזמים)").parent().parent().next().text().trim().split(", ");
@@ -72,7 +80,7 @@ var userId = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().ge
     spreadsheetId: '1bufIgo0FEsdAhtVD37vbrX_CvWcfaxdaQ2x9tZCNwJk',
     range: 'laws!A2',
     resource: {
-      values: [[lawName,userId,billType, billNum, derug,
+      values: [[lawName,lawitemid,userId,billType, billNum, derug,
                 location.href, description.value,
                 /* comment */, /* is voted? */,/* is passed? */, ].
                concat(initiators)]
